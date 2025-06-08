@@ -177,6 +177,13 @@ h1 {
     animation: bounce 0.5s ease infinite;
 }
 
+.bomb-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
 @media (max-width: 600px) {
     .container {
         margin: 1rem auto;

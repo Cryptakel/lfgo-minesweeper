@@ -10,7 +10,7 @@ class Minesweeper {
         this.timer = 0;
         this.timerInterval = null;
 
-        // DOM-Elemente
+        // DOM Elements
         this.gameBoard = document.getElementById('game-board');
         this.minesCount = document.getElementById('mines-count');
         this.timerDisplay = document.getElementById('timer');
@@ -19,10 +19,10 @@ class Minesweeper {
         this.highscoreDisplay = document.getElementById('highscore');
         this.reactionMessage = document.getElementById('reaction-message');
 
-        // Highscore aus localStorage laden
+        // Load highscore from localStorage
         this.loadHighscore();
 
-        // Event-Listener
+        // Event Listeners
         this.restartButton.addEventListener('click', () => this.restart());
         
         this.init();
@@ -42,7 +42,7 @@ class Minesweeper {
             setTimeout(() => {
                 this.highscoreDisplay.classList.remove('win-animation');
             }, 2000);
-            this.showReactionMessage('Neuer Highscore! 🏆');
+            this.showReactionMessage('New Highscore! 🏆');
         }
     }
 
@@ -56,22 +56,22 @@ class Minesweeper {
 
     getRandomReactionMessage() {
         const messages = [
-            "Gut gemacht! 🎯",
-            "Weiter so! 💪",
+            "Well done! 🎯",
+            "Keep it up! 💪",
             "Super! ⭐",
-            "Fantastisch! 🌟",
-            "Unglaublich! 🚀",
-            "Perfekt! 🎉",
-            "Ausgezeichnet! 🏆",
+            "Fantastic! 🌟",
+            "Incredible! 🚀",
+            "Perfect! 🎉",
+            "Excellent! 🏆",
             "Brilliant! ✨",
-            "Hervorragend! 🎯",
-            "Großartig! 🌈"
+            "Outstanding! 🎯",
+            "Amazing! 🌈"
         ];
         return messages[Math.floor(Math.random() * messages.length)];
     }
 
     init() {
-        // Spielfeld initialisieren
+        // Initialize board
         this.board = Array(this.rows).fill().map(() => 
             Array(this.cols).fill().map(() => ({
                 isMine: false,
@@ -81,13 +81,13 @@ class Minesweeper {
             }))
         );
 
-        // Grid-Layout für das Spielfeld setzen
+        // Set grid layout
         this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 40px)`;
         
-        // Spielfeld rendern
+        // Render board
         this.renderBoard();
         
-        // Minen-Zähler aktualisieren
+        // Update mines counter
         this.minesCount.textContent = this.mines;
     }
 
@@ -101,7 +101,7 @@ class Minesweeper {
                 cell.dataset.row = row;
                 cell.dataset.col = col;
                 
-                // Event-Listener für Links- und Rechtsklick
+                // Event listeners for left and right click
                 cell.addEventListener('click', (e) => this.handleClick(row, col));
                 cell.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
@@ -186,7 +186,7 @@ class Minesweeper {
             this.placeMines(row, col);
             this.firstClick = false;
             this.startTimer();
-            this.showReactionMessage("Los geht's! 🎮");
+            this.showReactionMessage("Let's go! 🎮");
         }
 
         if (this.board[row][col].isMine) {
@@ -205,10 +205,10 @@ class Minesweeper {
         this.revealCell(row, col);
         this.updateDisplay();
 
-        // Prüfen auf Sieg
+        // Check for win
         if (this.revealedCells === (this.rows * this.cols - this.mines)) {
             this.gameOver = true;
-            this.statusMessage.textContent = 'Gewonnen!';
+            this.statusMessage.textContent = 'You Win!';
             this.stopTimer();
             this.updateHighscore();
             this.showReactionMessage(this.getRandomReactionMessage());
@@ -222,7 +222,7 @@ class Minesweeper {
         this.updateDisplay();
         
         if (this.board[row][col].isFlagged) {
-            this.showReactionMessage("Flagge gesetzt! 🚩");
+            this.showReactionMessage("Flag placed! 🚩");
         }
     }
 
@@ -265,8 +265,12 @@ class Minesweeper {
                 if (cellData.isRevealed) {
                     cell.classList.add('revealed');
                     if (cellData.isMine) {
-                        cell.textContent = '🐸';
-                        cell.style.fontSize = '1.2rem';
+                        const bombImg = document.createElement('img');
+                        bombImg.src = 'assets/lego_bomb.png';
+                        bombImg.alt = 'Bomb';
+                        bombImg.className = 'bomb-icon';
+                        cell.innerHTML = '';
+                        cell.appendChild(bombImg);
                     } else {
                         cell.textContent = cellData.neighborMines || '';
                         if (cellData.neighborMines) {
@@ -309,5 +313,5 @@ class Minesweeper {
     }
 }
 
-// Spiel starten
+// Start the game
 const game = new Minesweeper(); 
