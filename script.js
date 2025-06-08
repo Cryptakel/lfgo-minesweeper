@@ -72,6 +72,7 @@ function placeMines(numMines) {
     const size = board.length;
     mines = [];
     
+    // Place mines
     while (mines.length < numMines) {
         const row = Math.floor(Math.random() * size);
         const col = Math.floor(Math.random() * size);
@@ -80,6 +81,25 @@ function placeMines(numMines) {
         if (!mines.includes(key)) {
             mines.push(key);
             board[row][col] = -1;
+        }
+    }
+    
+    // Calculate numbers for adjacent cells
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (board[i][j] === -1) continue;
+            
+            let count = 0;
+            for (let di = -1; di <= 1; di++) {
+                for (let dj = -1; dj <= 1; dj++) {
+                    const ni = i + di;
+                    const nj = j + dj;
+                    if (ni >= 0 && ni < size && nj >= 0 && nj < size && board[ni][nj] === -1) {
+                        count++;
+                    }
+                }
+            }
+            board[i][j] = count;
         }
     }
 }
@@ -174,6 +194,9 @@ function revealAll() {
             cell.classList.add('mine');
         }
         cell.classList.add('revealed');
+        if (board[row][col] > 0) {
+            cell.textContent = board[row][col];
+        }
     });
 }
 
