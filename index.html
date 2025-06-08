@@ -16,26 +16,30 @@
         <h2 class="subtitle">Degens beware... 🧱💣</h2>
         
         <div class="game-info">
-            <div class="mines-count">Mines: <span id="mines-count">0</span></div>
-            <div class="timer">Time: <span id="timer">0</span></div>
-            <div class="highscore">Best Time: <span id="highscore">-</span></div>
-            <button id="restart-button">Restart</button>
+            <div class="mines-count" id="mines-count">Mines: 10</div>
+            <div class="timer" id="timer">Time: 0s</div>
+            <div class="highscore" id="highscore">Best Time: -</div>
         </div>
-
+        
         <div class="difficulty-selector">
-            <label for="difficulty">Choose your doom level 🧱💥</label>
-            <select id="difficulty" class="degen-select">
-                <option value="rookie">Rookie Degen 🐣 (8x8, 10 bombs)</option>
-                <option value="mid">Mid Degen 🧠 (12x12, 20 bombs)</option>
-                <option value="galaxy">Galaxy Degen 🌌 (16x16, 40 bombs)</option>
+            <label for="difficulty-select">Choose your doom level 🧱💥</label>
+            <select id="difficulty-select" class="degen-select">
+                <option value="easy">Degen Starter 🐣 (9x9, 10 mines)</option>
+                <option value="medium">Degen Pro 🧠 (16x16, 40 mines)</option>
+                <option value="hard">Degen Master 🌌 (24x24, 99 mines)</option>
             </select>
         </div>
-
-        <div id="reaction-message" class="reaction-message">Good luck!</div>
-        <div id="status-message" class="status-message"></div>
         
-        <div id="game-board" class="game-board">
-            <!-- Game board will be created dynamically with JavaScript -->
+        <button id="restart-button" class="restart-button">Restart</button>
+        
+        <div class="reaction-message" id="reaction-message">
+            Ready to touch some grass?
+        </div>
+        
+        <div class="status-message" id="status-message"></div>
+        
+        <div class="game-board-container">
+            <div id="game-board" class="game-board"></div>
         </div>
     </div>
     

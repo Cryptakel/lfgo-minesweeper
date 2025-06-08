@@ -1,52 +1,53 @@
-// Game configuration
-const config = {
-    easy: { size: 9, mines: 10, name: 'Degen Starter' },
-    medium: { size: 16, mines: 40, name: 'Degen Pro' },
-    hard: { size: 24, mines: 99, name: 'Degen Master' }
-};
-
-let currentDifficulty = 'easy';
-let gameBoard = [];
+// Game state
+let board = [];
 let mines = [];
 let gameOver = false;
 let firstClick = true;
-let timer = 0;
+let startTime;
 let timerInterval;
-let highscore = localStorage.getItem('highscore') || Infinity;
+let difficulty = 'easy';
+
+// Difficulty settings
+const DIFFICULTY_SETTINGS = {
+    easy: { size: 9, mines: 10 },
+    medium: { size: 16, mines: 40 },
+    hard: { size: 24, mines: 99 }
+};
 
 // DOM Elements
-const gameBoardElement = document.getElementById('game-board');
-const minesCountElement = document.getElementById('mines-count');
-const timerElement = document.getElementById('timer');
-const highscoreElement = document.getElementById('highscore');
-const statusMessageElement = document.getElementById('status-message');
-const reactionMessageElement = document.getElementById('reaction-message');
-const difficultySelect = document.getElementById('difficulty-select');
+const gameBoard = document.getElementById('game-board');
+const minesCountDisplay = document.getElementById('mines-count');
+const timerDisplay = document.getElementById('timer');
+const highscoreDisplay = document.getElementById('highscore');
+const statusMessage = document.getElementById('status-message');
+const reactionMessage = document.getElementById('reaction-message');
 const restartButton = document.getElementById('restart-button');
+const difficultySelect = document.getElementById('difficulty-select');
 
 // Initialize game
 function initGame() {
-    const { size, mines: mineCount } = config[currentDifficulty];
-    gameBoard = Array(size).fill().map(() => Array(size).fill(0));
-    mines = [];
     gameOver = false;
     firstClick = true;
-    timer = 0;
     clearInterval(timerInterval);
-    updateTimer();
-    updateMinesCount(mineCount);
-    createBoard(size);
+    startTime = null;
+    timerDisplay.textContent = 'Time: 0s';
+    
+    const settings = DIFFICULTY_SETTINGS[difficulty];
+    minesCountDisplay.textContent = `Mines: ${settings.mines}`;
+    
+    createBoard(settings.size);
+    placeMines(settings.mines);
     updateHighscore();
 }
 
-// Create game board
+// Create the game board
 function createBoard(size) {
-    // Set grid template columns based on size
-    gameBoardElement.style.gridTemplateColumns = `repeat(${size}, 40px)`;
-    gameBoardElement.style.gridTemplateRows = `repeat(${size}, 40px)`;
-    gameBoardElement.style.display = 'grid';
-    gameBoardElement.style.gap = '2px';
-    gameBoardElement.innerHTML = '';
+    gameBoard.innerHTML = '';
+    gameBoard.style.gridTemplateColumns = `repeat(${size}, 30px)`;
+    gameBoard.style.gridTemplateRows = `repeat(${size}, 30px)`;
+    gameBoard.style.gap = '2px';
+    
+    board = Array(size).fill().map(() => Array(size).fill(0));
     
     for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
@@ -54,12 +55,31 @@ function createBoard(size) {
             cell.className = 'cell';
             cell.dataset.row = i;
             cell.dataset.col = j;
+            
             cell.addEventListener('click', () => handleCellClick(i, j));
             cell.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 handleRightClick(i, j);
             });
-            gameBoardElement.appendChild(cell);
+            
+            gameBoard.appendChild(cell);
+        }
+    }
+}
+
+// Place mines randomly
+function placeMines(numMines) {
+    const size = board.length;
+    mines = [];
+    
+    while (mines.length < numMines) {
+        const row = Math.floor(Math.random() * size);
+        const col = Math.floor(Math.random() * size);
+        const key = `${row},${col}`;
+        
+        if (!mines.includes(key)) {
+            mines.push(key);
+            board[row][col] = -1;
         }
     }
 }
@@ -70,19 +90,20 @@ function handleCellClick(row, col) {
     
     if (firstClick) {
         firstClick = false;
-        placeMines(row, col);
-        startTimer();
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
     }
     
-    const cell = gameBoardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
     
-    if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) return;
+    if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) {
+        return;
+    }
     
-    if (mines.some(mine => mine.row === row && mine.col === col)) {
+    if (board[row][col] === -1) {
         gameOver = true;
-        revealAllMines();
-        showPopup('Game Over! Better luck next time!', 'lose');
-        clearInterval(timerInterval);
+        revealAll();
+        showGameOver();
         return;
     }
     
@@ -94,169 +115,133 @@ function handleCellClick(row, col) {
 function handleRightClick(row, col) {
     if (gameOver) return;
     
-    const cell = gameBoardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
     
-    if (cell.classList.contains('revealed')) return;
-    
-    if (cell.classList.contains('flagged')) {
-        cell.classList.remove('flagged');
-        cell.textContent = '';
-        updateMinesCount(config[currentDifficulty].mines - document.querySelectorAll('.flagged').length);
-    } else {
-        cell.classList.add('flagged');
-        cell.textContent = '🚩';
-        updateMinesCount(config[currentDifficulty].mines - document.querySelectorAll('.flagged').length);
+    if (cell.classList.contains('revealed')) {
+        return;
     }
+    
+    cell.classList.toggle('flagged');
+    updateMinesCount();
 }
 
-// Place mines
-function placeMines(firstRow, firstCol) {
-    const { size, mines: mineCount } = config[currentDifficulty];
-    
-    while (mines.length < mineCount) {
-        const row = Math.floor(Math.random() * size);
-        const col = Math.floor(Math.random() * size);
-        
-        // Don't place mine on first click or adjacent cells
-        if (Math.abs(row - firstRow) <= 1 && Math.abs(col - firstCol) <= 1) continue;
-        
-        // Don't place duplicate mines
-        if (mines.some(mine => mine.row === row && mine.col === col)) continue;
-        
-        mines.push({ row, col });
-        gameBoard[row][col] = -1;
-    }
-    
-    // Calculate numbers
-    for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-            if (gameBoard[i][j] === -1) continue;
-            
-            let count = 0;
-            for (let di = -1; di <= 1; di++) {
-                for (let dj = -1; dj <= 1; dj++) {
-                    const ni = i + di;
-                    const nj = j + dj;
-                    if (ni >= 0 && ni < size && nj >= 0 && nj < size && gameBoard[ni][nj] === -1) {
-                        count++;
-                    }
-                }
-            }
-            gameBoard[i][j] = count;
-        }
-    }
-}
-
-// Reveal cell
+// Reveal cell and its neighbors
 function revealCell(row, col) {
-    const { size } = config[currentDifficulty];
-    const cell = gameBoardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    if (row < 0 || row >= board.length || col < 0 || col >= board.length) {
+        return;
+    }
     
-    if (cell.classList.contains('revealed')) return;
+    const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    
+    if (cell.classList.contains('revealed') || cell.classList.contains('flagged')) {
+        return;
+    }
     
     cell.classList.add('revealed');
     
-    if (gameBoard[row][col] === 0) {
-        // Reveal adjacent cells for empty cells
-        for (let di = -1; di <= 1; di++) {
-            for (let dj = -1; dj <= 1; dj++) {
-                const ni = row + di;
-                const nj = col + dj;
-                if (ni >= 0 && ni < size && nj >= 0 && nj < size) {
-                    revealCell(ni, nj);
-                }
-            }
-        }
+    if (board[row][col] === 0) {
+        const neighbors = getNeighbors(row, col);
+        neighbors.forEach(([r, c]) => revealCell(r, c));
     } else {
-        cell.textContent = gameBoard[row][col];
-        cell.dataset.number = gameBoard[row][col];
+        cell.textContent = board[row][col];
     }
 }
 
-// Reveal all mines
-function revealAllMines() {
-    mines.forEach(mine => {
-        const cell = gameBoardElement.querySelector(`[data-row="${mine.row}"][data-col="${mine.col}"]`);
+// Get neighboring cells
+function getNeighbors(row, col) {
+    const neighbors = [];
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) continue;
+            const newRow = row + i;
+            const newCol = col + j;
+            if (newRow >= 0 && newRow < board.length && newCol >= 0 && newCol < board.length) {
+                neighbors.push([newRow, newCol]);
+            }
+        }
+    }
+    return neighbors;
+}
+
+// Reveal all cells
+function revealAll() {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => {
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        
+        if (board[row][col] === -1) {
+            cell.classList.add('mine');
+        }
         cell.classList.add('revealed');
-        cell.innerHTML = '<img src="lego-brick.png" alt="💣" class="bomb-icon">';
     });
 }
 
-// Check win condition
+// Check for win
 function checkWin() {
-    const { size, mines: mineCount } = config[currentDifficulty];
-    const revealedCells = document.querySelectorAll('.cell.revealed').length;
-    const totalCells = size * size;
+    const cells = document.querySelectorAll('.cell');
+    const revealedCount = document.querySelectorAll('.cell.revealed').length;
+    const totalCells = cells.length;
+    const mineCount = mines.length;
     
-    if (revealedCells === totalCells - mineCount) {
+    if (revealedCount === totalCells - mineCount) {
         gameOver = true;
         clearInterval(timerInterval);
-        
-        if (timer < highscore) {
-            highscore = timer;
-            localStorage.setItem('highscore', highscore);
-            updateHighscore();
-            showPopup('New Highscore! You\'re a Degen Master!', 'win');
-        } else {
-            showPopup('You Won! Time to go touch some grass!', 'win');
-        }
-        
-        // Add win animation to all cells
-        document.querySelectorAll('.cell').forEach(cell => {
-            cell.classList.add('win-animation');
-        });
+        showWin();
     }
 }
 
-// Update mines count
-function updateMinesCount(count) {
-    minesCountElement.textContent = `Mines: ${count}`;
+// Show game over message
+function showGameOver() {
+    statusMessage.textContent = 'Game Over!';
+    statusMessage.className = 'status-message game-over';
+    reactionMessage.textContent = 'Better luck next time, degen!';
 }
 
-// Update timer
+// Show win message
+function showWin() {
+    const time = Math.floor((Date.now() - startTime) / 1000);
+    statusMessage.textContent = `You won in ${time} seconds!`;
+    statusMessage.className = 'status-message win';
+    reactionMessage.textContent = 'LFGO! You absolute legend!';
+    updateHighscore(time);
+}
+
+// Update timer display
 function updateTimer() {
-    timerElement.textContent = `Time: ${timer}s`;
+    const time = Math.floor((Date.now() - startTime) / 1000);
+    timerDisplay.textContent = `Time: ${time}s`;
 }
 
-// Start timer
-function startTimer() {
-    timerInterval = setInterval(() => {
-        timer++;
-        updateTimer();
-    }, 1000);
+// Update mines count display
+function updateMinesCount() {
+    const flaggedCount = document.querySelectorAll('.cell.flagged').length;
+    const remainingMines = mines.length - flaggedCount;
+    minesCountDisplay.textContent = `Mines: ${remainingMines}`;
 }
 
 // Update highscore
-function updateHighscore() {
-    highscoreElement.textContent = `Best Time: ${highscore === Infinity ? '-' : highscore}s`;
-}
-
-// Show popup
-function showPopup(message, type) {
-    const popup = document.createElement('div');
-    popup.className = `popup popup-${type}`;
-    popup.textContent = message;
+function updateHighscore(currentTime) {
+    const difficultyKey = `highscore_${difficulty}`;
+    const currentHighscore = localStorage.getItem(difficultyKey);
     
-    const container = document.querySelector('.game-board-container');
-    container.appendChild(popup);
-    
-    // Trigger animation
-    setTimeout(() => popup.classList.add('show'), 100);
-    
-    // Remove popup after animation
-    setTimeout(() => {
-        popup.classList.remove('show');
-        setTimeout(() => popup.remove(), 500);
-    }, 3000);
+    if (currentTime && (!currentHighscore || currentTime < parseInt(currentHighscore))) {
+        localStorage.setItem(difficultyKey, currentTime);
+        highscoreDisplay.textContent = `Best Time: ${currentTime}s`;
+    } else if (currentHighscore) {
+        highscoreDisplay.textContent = `Best Time: ${currentHighscore}s`;
+    } else {
+        highscoreDisplay.textContent = 'Best Time: -';
+    }
 }
 
 // Event Listeners
+restartButton.addEventListener('click', initGame);
+
 difficultySelect.addEventListener('change', (e) => {
-    currentDifficulty = e.target.value;
+    difficulty = e.target.value;
     initGame();
 });
 
-restartButton.addEventListener('click', initGame);
-
-// Initialize game on load
+// Initialize game
 initGame(); 
