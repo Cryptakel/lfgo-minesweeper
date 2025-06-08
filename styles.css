@@ -1,0 +1,203 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --lego-blue: #00bfff;
+    --lego-yellow: #ffbf00;
+    --lego-red: #ff3b3b;
+    --lego-green: #00ff7f;
+    --lego-orange: #ff7f00;
+    --lego-purple: #bf00ff;
+    --lego-pink: #ff00bf;
+    --lego-cyan: #00ffff;
+}
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #121212;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto 2rem;
+    max-width: 200px;
+    height: auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--lego-green);
+    font-size: 2rem;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--lego-yellow);
+    font-size: 1rem;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1b1b1b;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 0 #000;
+}
+
+.mines-count, .timer, .highscore {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.highscore {
+    color: var(--lego-yellow);
+}
+
+#restart-button {
+    background-color: var(--lego-green);
+    color: #000;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'Press Start 2P', cursive;
+    box-shadow: 0 4px 0 #000;
+    transition: all 0.2s;
+}
+
+#restart-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #000;
+}
+
+#restart-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #000;
+}
+
+.reaction-message {
+    text-align: center;
+    font-size: 1rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #1b1b1b;
+    border-radius: 8px;
+    color: var(--lego-green);
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 0 #000;
+}
+
+.status-message {
+    text-align: center;
+    font-size: 0.8rem;
+    margin: 1rem 0;
+    min-height: 1.5rem;
+    color: var(--lego-red);
+}
+
+.game-board {
+    display: grid;
+    gap: 2px;
+    background-color: #1b1b1b;
+    padding: 2px;
+    border-radius: 8px;
+    margin: 0 auto;
+    max-width: 500px;
+    box-shadow: 0 4px 0 #000;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    background-color: #2d2d2d;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 4px 0 #000;
+    font-size: 0.8rem;
+}
+
+.cell:hover {
+    background-color: #3d3d3d;
+    box-shadow: 0 0 10px var(--lego-green);
+}
+
+.cell.revealed {
+    background-color: #1b1b1b;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Number colors */
+.cell[data-number="1"] { color: var(--lego-blue); }
+.cell[data-number="2"] { color: var(--lego-green); }
+.cell[data-number="3"] { color: var(--lego-red); }
+.cell[data-number="4"] { color: var(--lego-purple); }
+.cell[data-number="5"] { color: var(--lego-orange); }
+.cell[data-number="6"] { color: var(--lego-cyan); }
+.cell[data-number="7"] { color: var(--lego-pink); }
+.cell[data-number="8"] { color: var(--lego-yellow); }
+
+/* Win animation */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.win-animation {
+    animation: bounce 0.5s ease infinite;
+}
+
+@media (max-width: 600px) {
+    .container {
+        margin: 1rem auto;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.8rem;
+    }
+
+    .game-info {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .cell {
+        width: 35px;
+        height: 35px;
+        font-size: 0.7rem;
+    }
+} 
