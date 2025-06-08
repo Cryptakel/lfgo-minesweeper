@@ -41,7 +41,11 @@ function initGame() {
 
 // Create game board
 function createBoard(size) {
+    // Set grid template columns based on size
     gameBoardElement.style.gridTemplateColumns = `repeat(${size}, 40px)`;
+    gameBoardElement.style.gridTemplateRows = `repeat(${size}, 40px)`;
+    gameBoardElement.style.display = 'grid';
+    gameBoardElement.style.gap = '2px';
     gameBoardElement.innerHTML = '';
     
     for (let i = 0; i < size; i++) {

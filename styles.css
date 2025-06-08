@@ -237,6 +237,7 @@ h1 {
     border-radius: 8px;
     margin: 0 auto;
     box-shadow: 0 4px 0 #000;
+    width: fit-content;
 }
 
 .cell {
