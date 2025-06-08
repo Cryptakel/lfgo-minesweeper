@@ -1,8 +1,16 @@
 class Minesweeper {
-    constructor(rows = 9, cols = 9, mines = 10) {
-        this.rows = rows;
-        this.cols = cols;
-        this.mines = mines;
+    constructor() {
+        this.difficultySettings = {
+            rookie: { rows: 8, cols: 8, mines: 10 },
+            mid: { rows: 12, cols: 12, mines: 20 },
+            galaxy: { rows: 16, cols: 16, mines: 40 }
+        };
+        
+        this.currentDifficulty = 'rookie';
+        this.rows = this.difficultySettings[this.currentDifficulty].rows;
+        this.cols = this.difficultySettings[this.currentDifficulty].cols;
+        this.mines = this.difficultySettings[this.currentDifficulty].mines;
+        
         this.board = [];
         this.gameOver = false;
         this.firstClick = true;
@@ -18,25 +26,36 @@ class Minesweeper {
         this.restartButton = document.getElementById('restart-button');
         this.highscoreDisplay = document.getElementById('highscore');
         this.reactionMessage = document.getElementById('reaction-message');
+        this.difficultySelect = document.getElementById('difficulty');
 
         // Load highscore from localStorage
         this.loadHighscore();
 
         // Event Listeners
         this.restartButton.addEventListener('click', () => this.restart());
+        this.difficultySelect.addEventListener('change', (e) => this.changeDifficulty(e.target.value));
         
         this.init();
     }
 
+    changeDifficulty(difficulty) {
+        this.currentDifficulty = difficulty;
+        const settings = this.difficultySettings[difficulty];
+        this.rows = settings.rows;
+        this.cols = settings.cols;
+        this.mines = settings.mines;
+        this.restart();
+    }
+
     loadHighscore() {
-        const savedHighscore = localStorage.getItem('minesweeperHighscore');
+        const savedHighscore = localStorage.getItem(`minesweeperHighscore_${this.currentDifficulty}`);
         this.highscoreDisplay.textContent = savedHighscore ? `${savedHighscore}s` : '-';
     }
 
     updateHighscore() {
-        const currentHighscore = localStorage.getItem('minesweeperHighscore');
+        const currentHighscore = localStorage.getItem(`minesweeperHighscore_${this.currentDifficulty}`);
         if (!currentHighscore || this.timer < parseInt(currentHighscore)) {
-            localStorage.setItem('minesweeperHighscore', this.timer.toString());
+            localStorage.setItem(`minesweeperHighscore_${this.currentDifficulty}`, this.timer.toString());
             this.highscoreDisplay.textContent = `${this.timer}s`;
             this.highscoreDisplay.classList.add('win-animation');
             setTimeout(() => {

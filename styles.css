@@ -20,12 +20,20 @@ body {
     background-color: #121212;
     color: #ffffff;
     line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
     max-width: 800px;
+    width: 100%;
     margin: 2rem auto;
     padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .logo {
@@ -62,6 +70,46 @@ h1 {
     flex-wrap: wrap;
     gap: 1rem;
     box-shadow: 0 4px 0 #000;
+    width: 100%;
+    max-width: 500px;
+}
+
+.difficulty-selector {
+    margin: 1rem 0;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.difficulty-selector label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--lego-yellow);
+    font-size: 0.8rem;
+}
+
+.degen-select {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #1b1b1b;
+    color: var(--lego-green);
+    border: 2px solid var(--lego-green);
+    border-radius: 4px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #000;
+    transition: all 0.2s;
+}
+
+.degen-select:hover {
+    border-color: var(--lego-yellow);
+    color: var(--lego-yellow);
+}
+
+.degen-select:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--lego-green);
 }
 
 .mines-count, .timer, .highscore {
@@ -110,6 +158,8 @@ h1 {
     justify-content: center;
     transition: all 0.3s ease;
     box-shadow: 0 4px 0 #000;
+    width: 100%;
+    max-width: 500px;
 }
 
 .status-message {
@@ -118,6 +168,8 @@ h1 {
     margin: 1rem 0;
     min-height: 1.5rem;
     color: var(--lego-red);
+    width: 100%;
+    max-width: 500px;
 }
 
 .game-board {
@@ -206,5 +258,10 @@ h1 {
         width: 35px;
         height: 35px;
         font-size: 0.7rem;
+    }
+
+    .degen-select {
+        font-size: 0.6rem;
+        padding: 0.6rem;
     }
 } 
