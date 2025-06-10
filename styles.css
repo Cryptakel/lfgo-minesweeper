@@ -17,23 +17,22 @@
 
 body {
     font-family: 'Press Start 2P', cursive;
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #000000;
+    color: #ffffff;
     line-height: 1.6;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
 .container {
     max-width: 800px;
     padding: 2rem;
     text-align: center;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(44, 62, 80, 0.9);
     border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .logo {
@@ -44,12 +43,12 @@ body {
 h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: #2c3e50;
+    color: #ffffff;
 }
 
 .subtitle {
     font-size: 1rem;
-    color: #7f8c8d;
+    color: #bdc3c7;
     margin-bottom: 2rem;
 }
 
@@ -61,10 +60,11 @@ h1 {
 }
 
 .mines-count, .timer, .highscore {
-    background: #fff;
+    background: #2c3e50;
     padding: 0.5rem 1rem;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
 }
 
 .difficulty-selector {
@@ -74,9 +74,10 @@ h1 {
 .degen-select {
     font-family: 'Press Start 2P', cursive;
     padding: 0.5rem;
-    border: 2px solid #2c3e50;
+    border: 2px solid #3498db;
     border-radius: 5px;
-    background: #fff;
+    background: #2c3e50;
+    color: #ffffff;
     cursor: pointer;
     font-size: 0.8rem;
 }
@@ -93,13 +94,13 @@ h1 {
     background: #2c3e50;
     padding: 2px;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .cell {
     width: 30px;
     height: 30px;
-    background: #ecf0f1;
+    background: #34495e;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -107,14 +108,15 @@ h1 {
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 3px;
+    color: #ffffff;
 }
 
 .cell:hover {
-    background: #bdc3c7;
+    background: #2c3e50;
 }
 
 .cell.revealed {
-    background: #fff;
+    background: #2c3e50;
 }
 
 .cell.flagged {
@@ -124,13 +126,17 @@ h1 {
 
 .cell.mine {
     background: #c0392b;
+    background-image: url('assets/lego_bomb.png');
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .restart-button {
     font-family: 'Press Start 2P', cursive;
     padding: 0.8rem 1.5rem;
     font-size: 0.8rem;
-    background: #2c3e50;
+    background: #3498db;
     color: white;
     border: none;
     border-radius: 5px;
@@ -140,7 +146,7 @@ h1 {
 }
 
 .restart-button:hover {
-    background: #34495e;
+    background: #2980b9;
     transform: translateY(-2px);
 }
 
@@ -149,21 +155,22 @@ h1 {
     margin: 1rem 0;
     padding: 0.5rem;
     border-radius: 5px;
+    color: #ffffff;
 }
 
 .status-message.win {
-    background: #2ecc71;
+    background: #27ae60;
     color: white;
 }
 
 .status-message.game-over {
-    background: #e74c3c;
+    background: #c0392b;
     color: white;
 }
 
 .reaction-message {
     font-size: 0.8rem;
-    color: #7f8c8d;
+    color: #bdc3c7;
     margin: 0.5rem 0;
     font-style: italic;
 }
