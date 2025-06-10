@@ -125,7 +125,7 @@ h1 {
 }
 
 .cell.mine {
-    background: #c0392b;
+    background: #f8f9fa;
     background-image: url('assets/lego_bomb.png');
     background-size: 80%;
     background-position: center;
